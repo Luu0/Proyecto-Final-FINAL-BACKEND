@@ -1,0 +1,167 @@
+paths:
+  /api/products:
+    get:
+      summary: Obtiene todos los productos de la app.
+      tag:
+        -Products
+      responses:
+        "200":
+          description: respuesta exitosa! se retorna un arreglo con todos los products.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#components/schemas/Product"
+        "400":
+          description: se envió un dato no válido.
+        "500":
+          description: Error inesperado, no se pudo manejar el proceso.
+          
+    post:
+      summary: Crea un nuevo Producto.
+      tag:
+        -Products
+      responses:
+        "200":
+          description: respuesta exitosa! retorna el producto creado.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#components/schemas/Products"
+        "400":
+          description: se envió un dato no válido.
+        "500":
+          description: Error inesperado, no se pudo manejar el proceso.
+
+  /api/products/{pid}:
+    get:
+      summary: Obtiene el Producto obtenido por pid.
+      tag:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: id del producto que se desea obtener.
+          schema:
+            $type: String
+      requestBody:
+        description: Obtiene el Producto especificado
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Products'
+      responses:
+        "200":
+          description: respuesta exitosa! se retorna el arreglo con el Producto especificado.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#components/schemas/Products"
+        "400":
+          description: se envió un dato no válido.
+        "500":
+          description: Error inesperado, no se pudo manejar el proceso.
+
+    put:
+      summary: Actualiza el producto obtenido por pid
+      tag:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: id del producto que se desea actualizar.
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: respuesta exitosa! retorna el producto actualizado.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#components/schemas/Products"
+        "400":
+          description: se envió un dato no válido.
+        "500":
+          description: Error inesperado, no se pudo manejar el proceso.
+
+    delete:
+      summary: Elimina el producto obtenido por pid
+      tag:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: id del producto que se desea eliminar.
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: respuesta exitosa! retorna el producto que fue eliminado.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#components/schemas/Products"
+        "400":
+          description: se envió un dato no válido.
+        "500":
+          description: Error inesperado, no se pudo manejar el proceso.
+          
+
+components:
+  schemas:
+    Products:
+      type: object
+      properties:
+        _id: 
+          type: ObjectId
+          description: Id autogenerado de Mongo.
+        title: 
+          type: String
+          description: nombre del producto.
+        description: 
+          type: String
+          description: descripcion del producto.
+        price: 
+          type: Number
+          description: precio del producto.
+        thumbnails: 
+          type: String
+          description: imagen/es del producto.
+        code: 
+          type: String
+          description: código único del producto.
+        stock: 
+          type: Number
+          description: cantidad de productos.
+        category:
+          type: String
+          description: categoría del producto.
+        status: 
+          type: Boolean
+          description: disponibilidad del producto.
+        owner:
+          type: String
+          description: creador del producto.
+      example:
+        _id: ObjectId("65ff6a8dfc45ae3fae84f745")
+        title: producto prueba 1
+        description: Este es un producto prueba
+        price: 500
+        thumbnails: producto prueba 1. thumbnail
+        code: abc123
+        stock: 100
+        category: prueba
+        status: true
+        owner: admin
