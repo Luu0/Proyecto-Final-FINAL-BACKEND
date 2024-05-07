@@ -1,3 +1,17 @@
 <div>
   <h1>Home</h1>
+  <button id="btnlogin" onclick="redirectlog()">Login</button>
+  <button id="btnregister" onclick="redirectreg()">Register</button>
 </div>
+
+<script>
+
+  function redirectlog(){
+    window.location.replace("/users/login")
+  }
+
+  function redirectreg(){
+    window.location.replace("/users/register")
+  }
+
+</script>
