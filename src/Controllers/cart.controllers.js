@@ -24,14 +24,25 @@ export const createEmptyController = async (req, res) => {
   const { products } = req.body;
   
   try {
-    const productMap = products.map(({ productId, quantity }) => ({
-      product: productId,
-      quantity: quantity || 1,
-    }));
-
-    const newCart = await createCart(productMap);
-
-    res.status(200).json({ message: "Successfully created!", cartCreated: newCart });
+    // Verificar si el usuario tiene un ID de carrito asignado
+    if (!req.user.cart_id) {
+      // Si no tiene un ID de carrito, creamos un nuevo carrito
+      const productMap = products.map(({ productId, quantity }) => ({
+        product: productId,
+        quantity: quantity || 1,
+      }));
+      
+      const newCart = await createCart(productMap);
+      
+      // Actualizamos el ID del carrito en el usuario
+      req.user.cart_id = newCart._id;
+      await req.user.save();
+      
+      res.status(200).json({ message: "Successfully created!", cartCreated: newCart });
+    } else {
+      // Si el usuario ya tiene un ID de carrito asignado, devolvemos un mensaje
+      res.status(200).json({ message: "User already has a cart assigned!" });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -105,9 +116,6 @@ export const UpdateCartController = async (req, res) => {
 
 export const addProductToCartController = async (req, res) => {
   try {
-    // if (req.session.user.rol !== 'user') {
-    //   return res.status(401).json({ message: "Acceso denegado" });
-    // }
     const { cid, pid } = req.params;
     const product = await getProductById(pid);
     const cart = await findById(cid);

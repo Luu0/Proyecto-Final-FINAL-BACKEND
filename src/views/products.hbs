@@ -84,8 +84,7 @@
       });
       if (response.ok) {
         const data = await response.json();
-        console.log('Carrito creado exitosamente al cargar la página', data.cartCreated._id);
-        userCartId = data.cartCreated._id;
+
       } else {
         throw new Error('Error al crear el carrito');
       }
@@ -104,12 +103,11 @@
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ quantity: 1 }) // Puedes enviar la cantidad como desees
+        body: JSON.stringify({ quantity: 1 }) 
       });
 
       if (response.ok) {
         alert('Producto agregado al carrito correctamente');
-        // Puedes realizar cualquier otra acción necesaria después de agregar el producto al carrito
       } else {
         throw new Error('Error al agregar el producto al carrito');
       }

@@ -31,11 +31,11 @@ const schema = new mongoose.Schema({
   last_conection:String,
   resetToken: String,
   resetTokenExpires: Date,
-  last_cart_id: {
+  cart_id: { 
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'carts' // Nombre de la colección del modelo de carrito
+    ref: 'carts'
   }
-  
+
 })
 
 const UserModel = mongoose.model(collection,schema);
