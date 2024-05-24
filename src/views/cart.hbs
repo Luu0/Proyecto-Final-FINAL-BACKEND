@@ -6,6 +6,7 @@
     <thead>
       <tr>
         <th>Producto</th>
+        <th>Descripción</th>
         <th>Cantidad</th>
         <th>Precio</th>
         <th>Total</th>
@@ -15,14 +16,17 @@
       {{#each cart.products}}
       <tr>
         <td>{{this.product.title}}</td>
+        <td>{{this.product.descripcion}}</td>
         <td>{{this.quantity}}</td>
         <td>{{this.product.price}}</td>
+        <td>{{multiply this.product.price this.quantity}}</td>
       </tr>
       {{/each}}
     </tbody>
   </table>
+  <p><strong>Total a pagar: {{calculateTotal cart.products}}</strong></p>
   <button onclick="FinishPurchase()">Terminar compra</button>
-  <button onclick="GoToProducts()">Voler a los productos</button>
+  <button onclick="GoToProducts()">Volver a los productos</button>
   {{else}}
   <p>Tu carrito está vacío</p>
   <button onclick="GoToProducts()">Volver a los productos</button>
@@ -30,33 +34,29 @@
 </div>
 
 <script>
-
   let userCartId = "{{cartId}}"
   
-  async function FinishPurchase(){
-    console.log(userCartId)
-    try{
-      const response = await fetch(`http://localhost:8080/api/carts/${userCartId}/purchase/finish`,{
+  async function FinishPurchase() {
+    try {
+      const response = await fetch(`http://localhost:8080/api/carts/${userCartId}/purchase/finish`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         },
-      })
+      });
 
-      console.log(response)
-      
       if (response.ok) {
         alert('Compra terminada correctamente');
       } else {
         throw new Error('Error al terminar la compra');
       }
-    }catch(error){
+    } catch (error) {
       console.error(error);
       alert('Error al realizar la Compra');
     }
   }
 
-  async function GoToProducts(){
-    window.location.replace("/products")
+  async function GoToProducts() {
+    window.location.replace("/products");
   }
 </script>

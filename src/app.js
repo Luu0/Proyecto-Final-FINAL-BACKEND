@@ -19,6 +19,7 @@ import initializePassport from "./Config/passport.config.js";
 import githubloginrouter from "./routes/github-login.views.router.js"
 import config from "./Config/config.js";
 import TestRouter from "./routes/TestRoute.js";
+import handlebarshelper from "./utils/handlebarshelper.js"
 
 const app = express();
 const SERVER_PORT = config.port;
@@ -67,7 +68,9 @@ app.engine("hbs",handlebars.engine({
   helpers: {
     eq: function (a, b) {
       return a === b;
-    }
+    },
+    multiply: handlebarshelper.helpers.multiply,
+    calculateTotal: handlebarshelper.helpers.calculateTotal
   }
 }));
 
