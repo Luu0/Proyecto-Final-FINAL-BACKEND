@@ -1,0 +1,62 @@
+<div>
+  <h1>Los contenidos de tu carrito son</h1>
+
+  {{#if cart.products.length}}
+  <table class="cartable">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Precio</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each cart.products}}
+      <tr>
+        <td>{{this.product.title}}</td>
+        <td>{{this.quantity}}</td>
+        <td>{{this.product.price}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  <button onclick="FinishPurchase()">Terminar compra</button>
+  <button onclick="GoToProducts()">Voler a los productos</button>
+  {{else}}
+  <p>Tu carrito está vacío</p>
+  <button onclick="GoToProducts()">Volver a los productos</button>
+  {{/if}}
+</div>
+
+<script>
+
+  let userCartId = "{{cartId}}"
+  
+  async function FinishPurchase(){
+    console.log(userCartId)
+    try{
+      const response = await fetch(`http://localhost:8080/api/carts/${userCartId}/purchase/finish`,{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+
+      console.log(response)
+      
+      if (response.ok) {
+        alert('Compra terminada correctamente');
+      } else {
+        throw new Error('Error al terminar la compra');
+      }
+    }catch(error){
+      console.error(error);
+      alert('Error al realizar la Compra');
+    }
+  }
+
+  async function GoToProducts(){
+    window.location.replace("/products")
+  }
+</script>

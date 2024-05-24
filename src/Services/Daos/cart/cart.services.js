@@ -1,4 +1,5 @@
 import { CartModel } from "../../../models/cart.model.js";
+import mongoose from "mongoose";
 
 export async function findCart(){
   return await CartModel.find();

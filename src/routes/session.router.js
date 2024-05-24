@@ -46,7 +46,8 @@ router.post('/login', passport.authenticate("login", {
     name: `${user.first_name} ${user.last_name}`,
     email: user.email,
     age: user.age,
-    rol: user.rol
+    rol: user.rol,
+    cart_id: user.cart_id
   }
 
   user.last_conection = new Date().toLocaleString();

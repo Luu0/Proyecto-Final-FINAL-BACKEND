@@ -97,3 +97,24 @@ export const UploadDocument = async(req,res)=>{
     res.status(500).send('Internal server error');
   }
 };
+
+export const UpdateCartId = async(req,res)=>{
+  try {
+    const { cart_id } = req.body;
+    const userData = req.session.user;
+
+    if (!userData) {
+      return res.status(400).json({ message: 'Usuario no autenticado' });
+    }
+
+    await UpdateUser(userData._id, { cart_id });
+
+    userData.cart_id = cart_id;
+    req.session.user = userData;
+
+    res.status(200).json({ message: 'Cart ID actualizado en la sesión y base de datos' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al actualizar el cart ID' });
+  }
+};

@@ -1,8 +1,10 @@
 import { findCart, findById, createCart, updateProducts, deleteProductFromCart } from "../Services/Daos/cart/cart.services.js";
 import { findProducts,createProduct,updateProduct,deleteProduct,getProductById } from "../Services/Daos/product/product.services.js";
 import {createTicket} from "../Services/Daos/ticket/ticket.dao.js"
+import { CartModel } from "../models/cart.model.js";
 import TicketDto from "../Services/dto/ticket.dto.js"
 import sendMail  from "../utils/nodeMailer.js";
+import mongoose from "mongoose";
 
 export const getcartContrller = async (req, res) => {
   try{
@@ -24,9 +26,7 @@ export const createEmptyController = async (req, res) => {
   const { products } = req.body;
   
   try {
-    // Verificar si el usuario tiene un ID de carrito asignado
     if (!req.user.cart_id) {
-      // Si no tiene un ID de carrito, creamos un nuevo carrito
       const productMap = products.map(({ productId, quantity }) => ({
         product: productId,
         quantity: quantity || 1,
@@ -34,13 +34,11 @@ export const createEmptyController = async (req, res) => {
       
       const newCart = await createCart(productMap);
       
-      // Actualizamos el ID del carrito en el usuario
       req.user.cart_id = newCart._id;
       await req.user.save();
       
       res.status(200).json({ message: "Successfully created!", cartCreated: newCart });
     } else {
-      // Si el usuario ya tiene un ID de carrito asignado, devolvemos un mensaje
       res.status(200).json({ message: "User already has a cart assigned!" });
     }
   } catch (error) {
@@ -73,23 +71,35 @@ export const createCartController = async (req, res) => {
   }
 };
 
-export const getCartByIdController = async (req, res) => {
+export const getCartByIdController = async (cartId) => {
   try {
-    const { cid } = req.params;
-    const cart = await findById(cid);
+    const cart = await findById(cartId);
 
-    if (!cart) return res.json({ message: "Cart not found" });
+    if (!cart) {
+      throw new Error("Carrito no encontrado");
+    }
 
-    res.json({
-      cart,
-      message: "Cart found",
-    });
+    // await cart.populate('products.product').execPopulate();
+
+    return cart;
   } catch (error) {
+    console.error(error);
+    throw new Error("Error al obtener el carrito");
+  }
+};
 
-    res.status(500).json({
-      error: error.message,  
-      message: "Error",
-    });
+export const getCartDetailsController = async (cartId) => {
+  try {
+    const cart = await CartModel.findById(cartId).populate('products.product').exec();
+
+    if (!cart) {
+      throw new Error("Carrito no encontrado");
+    }
+
+    return cart;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error al obtener el carrito con detalles");
   }
 };
 
@@ -165,6 +175,7 @@ export const DeleteCartProductController = async (req, res) => {
 };
 
 export const finishPurchaseController = async (req,res) =>{
+  console.log("hola")
   try {
     let cart = await findById(req.params.cid);
     let total_price = 0;
@@ -180,7 +191,6 @@ export const finishPurchaseController = async (req,res) =>{
           console.log(item.quantity)
         }
       } else {
-        // Manejar el caso en el que no se encuentra el producto
         console.log(`Product not found for ID: ${item.product}`);
       }
     }
@@ -189,6 +199,7 @@ export const finishPurchaseController = async (req,res) =>{
       cart.products = unstocked_products
       let newCart = await updateProducts(req.params.cid,cart)
       let newTicket = await createTicket({code:`${req.params.cid}_${Date.now()}`,amount:total_price,purchaser:req.session.user.email})
+      
       await sendMail(req.session.user.email, newTicket )
       return res.status(200).json(new TicketDto(newTicket))
     } 

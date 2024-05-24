@@ -5,7 +5,7 @@ import {authMiddlewareAdmin} from "./Custom/authMiddleware.js";
 
 const router = Router();
 
-router.get("/",(req,res)=>{
+router.get("/",(req,res)=>{+
   res.render("home.hbs")
 });
 
@@ -16,7 +16,7 @@ router.get("/products", async (req,res) => {
   const userData = req.session.user;
   const welcomeMessage = 'Bienvenido';
 
-  res.render("products.hbs", { products, user: userData, welcomeMessage }, (err, html) => {
+  res.render("products.hbs", { products, user: userData, welcomeMessage, UserCartId:userData.cart_id}, (err, html) => {
       if (err) {
         throw err
       }

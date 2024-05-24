@@ -46,8 +46,6 @@
             >Previous</a></li>
         {{/if}}
 
-        {{!-- Links a siguientes páginas --}}
-
         {{#if products.hasNextPage}}
           <li class="page-item"><a
               class="page-link"
@@ -62,11 +60,13 @@
       {{products.page}}
     </p>
   </div>
+
+  <button id="purchaseview" onclick="functionPurchase()">Ir al carrito</button>
 </div>
 
 <script>
 
-  let userCartId;
+  let userCartId = "{{UserCartId}}";
 
   function changeLimit(newLimit) {
     window.location.href = `/products?page=1&limit=${newLimit}`
@@ -84,6 +84,19 @@
       });
       if (response.ok) {
         const data = await response.json();
+        userCartId = data.cartCreated._id;
+        
+        const updateResponse = await fetch('http://localhost:8080/users/users/updateCartId', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ cart_id: userCartId })
+        });
+
+        if (!updateResponse.ok) {
+          throw new Error('Error al actualizar el cart ID en la sesión y base de datos');
+        }
 
       } else {
         throw new Error('Error al crear el carrito');
@@ -93,10 +106,45 @@
     }
   }
 
-  window.onload = createCartOnLoad;
+  async function getUserData() {
+    try {
+      const response = await fetch('/users/userdata', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      if (response.ok) {
+        
+        const userData = await response.json();
+        console.log(userData)
+        if (userData.user && userData.user.cart_id) {
+          userCartId = userData.user.cart_id;
+          console.log('ID del carrito del usuario:', userCartId);
+        } else {
+          console.log('El usuario no tiene un carrito asignado aún.');
+        }
+      } else {
+        throw new Error('Error al obtener los datos del usuario');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function checkAndInitializeCart() {
+    if (userCartId) {
+      await getUserData();
+    } else {
+      await createCartOnLoad();
+    }
+  }
+
+  window.onload = async function() {
+    await checkAndInitializeCart();
+  };
 
   async function addToCart(productId) {
-    console.log(productId)
     try {
       const response = await fetch(`/api/carts/${userCartId}/product/${productId}`, {
         method: 'POST',
@@ -127,6 +175,10 @@
       console.log(result.status)
       if(result.status === 200) window.location.replace('/users/login')
     })
+  }
+
+  function functionPurchase(){
+    window.location.replace("api/carts/purchase/cart")
   }
 
 </script>

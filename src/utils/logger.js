@@ -46,7 +46,7 @@ const devLogger = winston.createLogger({
 })
 
 export const addLogger = (req, res, next) => {
-  if (config.Mode === 'Production') {
+  if (config.Mode === 'Development') {
     req.logger = prodLogger
 
     req.logger.info(`${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`)

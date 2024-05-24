@@ -1,6 +1,6 @@
 import {Router} from 'express'
 import { authMiddlewareAdmin, authMiddlewareUser } from './Custom/authMiddleware.js';
-import { getAllUsers,getUserByIdController,MakeUserPremium,UploadDocument} from '../Controllers/user.controller.js';
+import { getAllUsers,getUserByIdController,MakeUserPremium,UploadDocument,UpdateCartId} from '../Controllers/user.controller.js';
 import { upload } from '../middlewares/multermiddleware.js';
 
 const router = Router();
@@ -16,6 +16,13 @@ router.post('/:uid/documents',upload.array("document"),UploadDocument)
 router.get("/login", (req,res)=>{
     res.render('login')
 })
+
+router.post("/users/updateCartId",UpdateCartId)
+
+router.get('/userdata', (req, res) => {
+    const user = req.session.user;
+    res.json({ user });
+});
 
 router.get("/register", (req,res)=>{
     res.render('register')
