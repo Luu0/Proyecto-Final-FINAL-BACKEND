@@ -175,16 +175,19 @@ export const DeleteCartProductController = async (req, res) => {
 };
 
 export const finishPurchaseController = async (req,res) =>{
-  console.log("hola")
   try {
     let cart = await findById(req.params.cid);
     let total_price = 0;
     let unstocked_products = [];
+    
     for (const item of cart.products) {
-      let product = await getProductById(item.product);
+      let product = await getProductById(item.product);      
       if (product) {
         if (product.stock >= item.quantity) {
           total_price += item.quantity * product.price;
+
+          console.log(total_price)
+
           let stockLowering = await updateProduct(item.product, { stock: product.stock - item.quantity });
         } else {
           unstocked_products.push({ product: product._id, quantity: item.quantity });

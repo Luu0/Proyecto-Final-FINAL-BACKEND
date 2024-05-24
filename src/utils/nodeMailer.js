@@ -15,19 +15,26 @@ const transport = nodemailer.createTransport({
   }
 })
 
-const sendMail = async (email, ticket) =>{
-  console.log(email)
-  let result = await transport.sendMail({
-    from: 'Compras <valentinolucero93@gmail.com>',
-    to: email,
-    subject: "Su ticket",
-    html: `<div> 
-        <p>Código:${ticket.code}</p>
-        <p>Monto:${ticket.amount}</p>
-        <p>Fecha y Hora:${ticket.purchase_datetime}</p>
-    </div>`
-  })
-}
+const sendMail = async (email, ticket) => {
+  try {
+    let result = await transport.sendMail({
+      from: 'Compras <valentinolucero93@gmail.com>',
+      to: email,
+      subject: "Su ticket",
+      html: `<div> 
+          <p>Código: ${ticket.code}</p>
+          <p>Monto: ${ticket.amount}</p>
+          <p>Fecha y Hora: ${ticket.purchase_datetime}</p>
+      </div>`
+    });
+    console.log('Correo enviado: %s', result.messageId);
+  } catch (error) {
+    console.error('Error al enviar el correo:', error);o
+    setTimeout(() => {
+      sendMail(email, ticket);
+    }, 5000); 
+  }
+};
 
 
 export const sendPasswordToResetEmail = async (email,resetToken)=>{
