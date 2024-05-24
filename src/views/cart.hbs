@@ -35,10 +35,8 @@
 
 <script>
   let userCartId = "{{cartId}}"
-
   
   async function FinishPurchase() {
-  console.log(userCartId)
     try {
       const response = await fetch(`http://localhost:8080/api/carts/${userCartId}/purchase/finish`, {
         method: 'GET',

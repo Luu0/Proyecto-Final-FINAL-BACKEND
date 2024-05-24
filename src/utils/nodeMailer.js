@@ -29,7 +29,7 @@ const sendMail = async (email, ticket) => {
     });
     console.log('Correo enviado: %s', result.messageId);
   } catch (error) {
-    console.error('Error al enviar el correo:', error);o
+    console.error('Error al enviar el correo:', error);
     setTimeout(() => {
       sendMail(email, ticket);
     }, 5000); 
